@@ -47,5 +47,6 @@ public class ChatServer
         running = false;
         Listener.Stop();
         thread.Join(500);
+        Console.WriteLine("Server stopped");
     }
 }
