@@ -8,9 +8,9 @@ public class ClientHandler
     private TcpClient client;
     private Thread thread;
 
-    public ClientHandler(TcpClient client)
+    public ClientHandler(TcpClient tcpClient)
     {
-        client = client;
+        client = tcpClient;
         thread = new Thread(Run);
         thread.IsBackground = true;
         thread.Start();
@@ -33,7 +33,7 @@ public class ClientHandler
                 writer.WriteLine(line);
             }
         }
-        catch (Exception e)
+        catch (IOException e)
         {
             Console.WriteLine(e);
             throw;

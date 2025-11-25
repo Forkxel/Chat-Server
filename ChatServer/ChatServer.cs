@@ -5,14 +5,15 @@ namespace ChatServer;
 
 public class ChatServer
 {
-    private TcpListener Listener;
+    private TcpListener listener;
     private Thread thread;
     private bool running = true;
 
     public ChatServer(int port)
     {
-        Listener = new TcpListener(IPAddress.Any, port);
+        listener = new TcpListener(IPAddress.Any, port);
         thread = new Thread(AcceptClient);
+        thread.IsBackground = true;
     }
 
     public void AcceptClient()
@@ -21,10 +22,10 @@ public class ChatServer
         {
             try
             {
-                var client = Listener.AcceptTcpClient();
+                var client = listener.AcceptTcpClient();
                 Console.WriteLine("Client connected " + client.Client.RemoteEndPoint);
-                
-                client.Close();
+
+                _ = new ClientHandler(client);
             }
             catch (SocketException e) when (!running) { }
             catch (Exception e)
@@ -37,7 +38,7 @@ public class ChatServer
 
     public void Start()
     {
-        Listener.Start();
+        listener.Start();
         thread.Start();
         Console.WriteLine("Server started");
     }
@@ -45,7 +46,7 @@ public class ChatServer
     public void Stop()
     {
         running = false;
-        Listener.Stop();
+        listener.Stop();
         thread.Join(500);
         Console.WriteLine("Server stopped");
     }
