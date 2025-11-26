@@ -6,11 +6,11 @@ namespace ChatServer;
 public class MessageDispatcher
 {
     private BlockingCollection<Message> queue = new();
-    private Func<IEnumerable<ClientHandler>> clientsProvider;
+    private Func<ClientHandler[]> clientsProvider;
     private Thread thread;
     private bool running = true;
 
-    public MessageDispatcher(Func<IEnumerable<ClientHandler>> clientsProvider)
+    public MessageDispatcher(Func<ClientHandler[]> clientsProvider)
     {
         this.clientsProvider = clientsProvider;
         thread = new Thread(Send);
@@ -30,7 +30,7 @@ public class MessageDispatcher
             {
                 var message = queue.Take();
                 var text = $"[{message.Time:HH:mm:ss}] {message.Sender}: {message.Text}";
-                foreach (var client in clientsProvider().ToList())
+                foreach (var client in clientsProvider().Where(c => c.Room == message.Sender.Room))
                 {
                     try
                     {
