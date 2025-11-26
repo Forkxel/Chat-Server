@@ -7,13 +7,39 @@ public class ChatServer
 {
     private TcpListener listener;
     private Thread thread;
-    private MessageDispatcher dispatcher = new();
+    public MessageDispatcher Dispatcher { get; set; }
     private bool running = true;
+    private List<ClientHandler> clients = new();
+    private object clientsLock = new();
+    
 
     public ChatServer(int port)
     {
         listener = new TcpListener(IPAddress.Any, port);
+        Dispatcher = new MessageDispatcher((() =>
+        {
+            lock (clientsLock) 
+            {
+                return clients.ToArray();
+            }
+        }));
         thread = new Thread(AcceptClient);
+    }
+
+    public void AddClient(ClientHandler clientHandler)
+    {
+        lock (clientsLock)
+        {
+            clients.Add(clientHandler);
+        }
+    }
+
+    public void RemoveClient(ClientHandler clientHandler)
+    {
+        lock (clientsLock)
+        {
+            clients.Remove(clientHandler);
+        }
     }
 
     public void AcceptClient()
@@ -25,7 +51,7 @@ public class ChatServer
                 var client = listener.AcceptTcpClient();
                 Console.WriteLine("Client connected " + client.Client.RemoteEndPoint);
 
-                _ = new ClientHandler(client, dispatcher);
+                _ = new ClientHandler(client, this);
             }
             catch (SocketException e) when (!running) { }
             catch (Exception e)
@@ -47,7 +73,6 @@ public class ChatServer
     {
         running = false;
         listener.Stop();
-        dispatcher.Stop();
         thread.Join(500);
         Console.WriteLine("Server stopped");
     }
