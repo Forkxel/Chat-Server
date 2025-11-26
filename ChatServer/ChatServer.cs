@@ -7,6 +7,7 @@ public class ChatServer
 {
     private TcpListener listener;
     private Thread thread;
+    private MessageDispatcher dispatcher = new();
     private bool running = true;
 
     public ChatServer(int port)
@@ -24,7 +25,7 @@ public class ChatServer
                 var client = listener.AcceptTcpClient();
                 Console.WriteLine("Client connected " + client.Client.RemoteEndPoint);
 
-                _ = new ClientHandler(client);
+                _ = new ClientHandler(client, dispatcher);
             }
             catch (SocketException e) when (!running) { }
             catch (Exception e)
@@ -46,6 +47,7 @@ public class ChatServer
     {
         running = false;
         listener.Stop();
+        dispatcher.Stop();
         thread.Join(500);
         Console.WriteLine("Server stopped");
     }

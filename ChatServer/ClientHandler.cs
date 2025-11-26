@@ -7,10 +7,13 @@ public class ClientHandler
 {
     private TcpClient client;
     private Thread thread;
+    private MessageDispatcher dispatcher;
+    public string Name { get; set; }
 
-    public ClientHandler(TcpClient tcpClient)
+    public ClientHandler(TcpClient tcpClient, MessageDispatcher dispatcher)
     {
         client = tcpClient;
+        this.dispatcher = dispatcher;
         thread = new Thread(Run);
         thread.Start();
     }
@@ -29,7 +32,15 @@ public class ClientHandler
             string line;
             while ((line = reader.ReadLine()) != null)
             {
-                writer.WriteLine(line);
+                if (line.StartsWith("/nick"))
+                {
+                    Name = line.Substring(6).Trim();
+                    writer.WriteLine("Name set to: " + Name);
+                }
+                else
+                {
+                    dispatcher.Enqueue(new Message(line,this));
+                }
             }
         }
         catch (IOException e)
