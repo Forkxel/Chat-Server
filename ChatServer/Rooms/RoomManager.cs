@@ -4,15 +4,26 @@ namespace ChatServer.Rooms;
 
 public class RoomManager
 {
-    private ConcurrentDictionary<string, Room> rooms = new();
+    private Dictionary<string, Room> rooms = new();
+    private object roomsLock = new();
 
     public Room GetOrCreateRoom(string roomName)
     {
-        return rooms.GetOrAdd(roomName, n => new Room(roomName));
+        lock (roomsLock)
+        {
+            if (!rooms.TryGetValue(roomName, out Room room))
+            {
+                rooms[roomName] = room = new Room(roomName);
+            }
+            return room;
+        }
     }
 
-    public IEnumerable<string> GetAllRooms()
+    public Room GetRoom(string roomName)
     {
-        return rooms.Keys;
+        lock (roomsLock)
+        {
+            return rooms[roomName];
+        }
     }
 }
