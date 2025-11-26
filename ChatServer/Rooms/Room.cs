@@ -28,7 +28,7 @@ public class Room
             members.Remove(handler);
         }
     }
-
+    /*
     public void Broadcast(Message message)
     {
         lock (membersLock)
@@ -42,4 +42,5 @@ public class Room
             }
         }
     }
+    */
 }

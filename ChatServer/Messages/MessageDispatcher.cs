@@ -9,6 +9,7 @@ public class MessageDispatcher
     private Func<ClientHandler[]> clientsProvider;
     private Thread thread;
     private bool running = true;
+    public Logger Logger { get; } = new Logger();
 
     public MessageDispatcher(Func<ClientHandler[]> clientsProvider)
     {
@@ -30,11 +31,12 @@ public class MessageDispatcher
             {
                 var message = queue.Take();
                 var text = $"[{message.Time:HH:mm:ss}] {message.Sender.Name}: {message.Text}";
-                foreach (var client in clientsProvider().Where(c => c.Room == message.Sender.Room && c != message.Sender))
+                foreach (var client in clientsProvider().Where(c => c.Room == message.Sender.Room))
                 {
                     try
                     {
                         client.SendMessage(text);
+                        Logger.Log($"[{message.Sender.Room}] {message.Sender.Room.Name}: {message.Text}");
                     }
                     catch (Exception e)
                     {

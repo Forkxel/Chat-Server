@@ -13,8 +13,8 @@ public class ChatServer
     private List<ClientHandler> clients = new();
     private object clientsLock = new();
     public RoomManager RoomManager { get; set; } = new();
+    public Logger Logger { get; set; } = new Logger();
     
-
     public ChatServer(int port)
     {
         listener = new TcpListener(IPAddress.Any, port);
@@ -41,6 +41,7 @@ public class ChatServer
         lock (clientsLock)
         {
             clients.Remove(clientHandler);
+            Logger.Log($"{clientHandler.Name} disconnected from the room {clientHandler.Room.Name}.");
         }
     }
 
@@ -52,6 +53,7 @@ public class ChatServer
             {
                 var client = listener.AcceptTcpClient();
                 Console.WriteLine("Client connected " + client.Client.RemoteEndPoint);
+                Logger.Log("Client connected " + client.Client.RemoteEndPoint);
 
                 _ = new ClientHandler(client, this);
             }
