@@ -12,7 +12,6 @@ public class ClientHandler
     {
         client = tcpClient;
         thread = new Thread(Run);
-        thread.IsBackground = true;
         thread.Start();
     }
 

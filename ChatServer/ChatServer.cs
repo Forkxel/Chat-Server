@@ -13,7 +13,6 @@ public class ChatServer
     {
         listener = new TcpListener(IPAddress.Any, port);
         thread = new Thread(AcceptClient);
-        thread.IsBackground = true;
     }
 
     public void AcceptClient()
