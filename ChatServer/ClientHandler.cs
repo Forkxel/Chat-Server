@@ -7,13 +7,15 @@ public class ClientHandler
 {
     private TcpClient client;
     private Thread thread;
-    private MessageDispatcher dispatcher;
+    private ChatServer server;
+    private StreamWriter writer;
+    private StreamReader reader;
     public string Name { get; set; }
 
-    public ClientHandler(TcpClient tcpClient, MessageDispatcher dispatcher)
+    public ClientHandler(TcpClient tcpClient, ChatServer server)
     {
         client = tcpClient;
-        this.dispatcher = dispatcher;
+        this.server = server;
         thread = new Thread(Run);
         thread.Start();
     }
@@ -23,12 +25,13 @@ public class ClientHandler
         try
         {
             using var stream = client.GetStream();
-            using var reader = new StreamReader(stream, Encoding.UTF8);
-            using var writer = new StreamWriter(stream, Encoding.UTF8);
+            reader = new StreamReader(stream, Encoding.UTF8);
+            writer = new StreamWriter(stream, Encoding.UTF8);
 
+            server.AddClient(this);
             writer.AutoFlush = true;
 
-            writer.WriteLine("Type and it will echo");
+            writer.WriteLine("Type message you want to send.");
             string line;
             while ((line = reader.ReadLine()) != null)
             {
@@ -39,7 +42,7 @@ public class ClientHandler
                 }
                 else
                 {
-                    dispatcher.Enqueue(new Message(line,this));
+                    server.Dispatcher.Enqueue(new Message(line, this));
                 }
             }
         }
@@ -50,7 +53,23 @@ public class ClientHandler
         }
         finally
         {
+            server.RemoveClient(this);
             client.Close();
+        }
+    }
+
+    public void SendMessage(string message)
+    {
+        try
+        {
+            lock (writer)
+            {
+                writer.WriteLine(message);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
         }
     }
 }
