@@ -29,8 +29,8 @@ public class MessageDispatcher
             try
             {
                 var message = queue.Take();
-                var text = $"[{message.Time:HH:mm:ss}] {message.Sender}: {message.Text}";
-                foreach (var client in clientsProvider().Where(c => c.Room == message.Sender.Room))
+                var text = $"[{message.Time:HH:mm:ss}] {message.Sender.Name}: {message.Text}";
+                foreach (var client in clientsProvider().Where(c => c.Room == message.Sender.Room && c != message.Sender))
                 {
                     try
                     {
