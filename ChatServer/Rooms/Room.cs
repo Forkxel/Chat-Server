@@ -5,7 +5,8 @@ namespace ChatServer.Rooms;
 public class Room
 {
     public string Name { get; set; }
-    private ConcurrentDictionary<ClientHandler, byte> members = new();
+    private List<ClientHandler> members = new();
+    private object membersLock = new();
 
     public Room(string name)
     {
@@ -14,16 +15,31 @@ public class Room
 
     public void AddMember(ClientHandler handler)
     {
-        members[handler] = 0;
+        lock (membersLock)
+        {
+            members.Add(handler);
+        }
     }
 
     public void RemoveMember(ClientHandler handler)
     {
-        members.TryRemove(handler, out _);
+        lock (membersLock)
+        {
+            members.Remove(handler);
+        }
     }
 
-    public IEnumerable<ClientHandler> GetMembers()
+    public void Broadcast(Message message)
     {
-        return members.Keys;
+        lock (membersLock)
+        {
+            foreach (var member in members)
+            {
+                if (member != message.Sender)
+                {
+                    member.SendMessage($"{message.Sender.Name}: {message.Text}");
+                }
+            }
+        }
     }
 }
