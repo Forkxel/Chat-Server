@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using ChatServer.Rooms;
 
 namespace ChatServer;
 
@@ -11,18 +12,19 @@ public class ChatServer
     private bool running = true;
     private List<ClientHandler> clients = new();
     private object clientsLock = new();
+    public RoomManager RoomManager { get; set; } = new();
     
 
     public ChatServer(int port)
     {
         listener = new TcpListener(IPAddress.Any, port);
-        Dispatcher = new MessageDispatcher((() =>
+        Dispatcher = new MessageDispatcher(() =>
         {
             lock (clientsLock) 
             {
                 return clients.ToArray();
             }
-        }));
+        });
         thread = new Thread(AcceptClient);
     }
 
@@ -42,7 +44,7 @@ public class ChatServer
         }
     }
 
-    public void AcceptClient()
+    private void AcceptClient()
     {
         while (running)
         {
@@ -73,6 +75,7 @@ public class ChatServer
     {
         running = false;
         listener.Stop();
+        Dispatcher.Stop();
         thread.Join(500);
         Console.WriteLine("Server stopped");
     }

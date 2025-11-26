@@ -1,5 +1,6 @@
 ﻿using System.Net.Sockets;
 using System.Text;
+using ChatServer.Rooms;
 
 namespace ChatServer;
 
@@ -10,7 +11,8 @@ public class ClientHandler
     private ChatServer server;
     private StreamWriter writer;
     private StreamReader reader;
-    public string Name { get; set; }
+    public string Name { get; set; } = "Anonymous";
+    public Room Room { get; set; }
 
     public ClientHandler(TcpClient tcpClient, ChatServer server)
     {
@@ -28,10 +30,15 @@ public class ClientHandler
             reader = new StreamReader(stream, Encoding.UTF8);
             writer = new StreamWriter(stream, Encoding.UTF8);
 
+            Room = server.RoomManager.GetOrCreateRoom("general");
+            Room.AddMember(this);
+
             server.AddClient(this);
             writer.AutoFlush = true;
 
-            writer.WriteLine("Type message you want to send.");
+            writer.WriteLine("Welcome to Chat Server!");
+            writer.WriteLine("Use /nick <name> to set nickname.");
+            writer.WriteLine("Use /join <name> to switch room.");
             string line;
             while ((line = reader.ReadLine()) != null)
             {
@@ -40,19 +47,30 @@ public class ClientHandler
                     Name = line.Substring(6).Trim();
                     writer.WriteLine("Name set to: " + Name);
                 }
+                else if (line.StartsWith("/join"))
+                {
+                    var newRoom = line.Substring(6).Trim();
+                    if (!string.IsNullOrEmpty(newRoom))
+                    {
+                        Room.RemoveMember(this);
+                        Room = server.RoomManager.GetOrCreateRoom(newRoom);
+                        Room.AddMember(this);
+                        writer.WriteLine("Joined room: " + newRoom);
+                    }
+                }
                 else
                 {
-                    server.Dispatcher.Enqueue(new Message(line, this));
+                    server.Dispatcher.Enqueue(new Message(line, Room.Name,this));
                 }
             }
         }
         catch (IOException e)
         {
             Console.WriteLine(e);
-            throw;
         }
         finally
         {
+            Room.RemoveMember(this);
             server.RemoveClient(this);
             client.Close();
         }
