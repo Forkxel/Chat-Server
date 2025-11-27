@@ -28,19 +28,4 @@ public class Room
             members.Remove(handler);
         }
     }
-    /*
-    public void Broadcast(Message message)
-    {
-        lock (membersLock)
-        {
-            foreach (var member in members)
-            {
-                if (member != message.Sender)
-                {
-                    member.SendMessage($"{message.Sender.Name}: {message.Text}");
-                }
-            }
-        }
-    }
-    */
 }

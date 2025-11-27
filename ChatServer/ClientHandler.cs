@@ -38,17 +38,17 @@ public class ClientHandler
             writer.AutoFlush = true;
 
             writer.WriteLine("Welcome to Chat Server!");
-            writer.WriteLine("Use /nick <name> to set nickname.");
-            writer.WriteLine("Use /join <name> to switch room.");
+            writer.WriteLine("Use -nick <name> to set nickname.");
+            writer.WriteLine("Use -join <name> to switch room.");
             string line;
             while ((line = reader.ReadLine()) != null)
             {
-                if (line.StartsWith("/nick"))
+                if (line.StartsWith("-nick"))
                 {
                     Name = line.Substring(6).Trim();
                     writer.WriteLine("Name set to: " + Name);
                 }
-                else if (line.StartsWith("/join"))
+                else if (line.StartsWith("-join"))
                 {
                     var newRoom = line.Substring(6).Trim();
                     if (!string.IsNullOrEmpty(newRoom))
@@ -67,7 +67,7 @@ public class ClientHandler
         }
         catch (IOException e)
         {
-            Console.WriteLine(e);
+            Console.WriteLine($"Client {Name} disconnected");
         }
         finally
         {
@@ -85,6 +85,14 @@ public class ClientHandler
             {
                 writer.WriteLine(message);
             }
+        }
+        catch (ObjectDisposedException e)
+        {
+            server.RemoveClient(this);
+        }
+        catch (IOException e)
+        {
+            server.RemoveClient(this);
         }
         catch (Exception e)
         {

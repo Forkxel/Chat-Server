@@ -44,7 +44,7 @@ public class MessageDispatcher
                     try
                     {
                         client.SendMessage(text);
-                        Logger.Log($"[{message.Sender.Room}] {message.Sender.Room.Name}: {message.Text}");
+                        Logger.Log($"[{message.Sender.Room.Name}] {message.Sender.Name}: {message.Text}");
                     }
                     catch (Exception e)
                     {

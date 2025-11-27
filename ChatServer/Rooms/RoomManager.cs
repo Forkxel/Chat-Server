@@ -18,13 +18,4 @@ public class RoomManager
             return room;
         }
     }
-    /*
-    public Room GetRoom(string roomName)
-    {
-        lock (roomsLock)
-        {
-            return rooms[roomName];
-        }
-    }
-    */
 }
