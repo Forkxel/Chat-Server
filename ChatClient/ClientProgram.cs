@@ -56,9 +56,10 @@ public class ClientProgram
             while (true)
             {
                 string input = Console.ReadLine();
-                if (string.IsNullOrEmpty(input)) continue;
-
-                writer.WriteLine(input);
+                if (!string.IsNullOrEmpty(input))
+                {
+                    writer.WriteLine(input);
+                }
             }
         }
         catch (SocketException e)
@@ -67,7 +68,12 @@ public class ClientProgram
         }
         catch (IOException e)
         {
-            
+            Console.WriteLine("Connection lost.");
+        }
+        finally
+        {
+            Console.Write("\nPress any key to exit...");
+            Console.ReadLine();
         }
     }
 

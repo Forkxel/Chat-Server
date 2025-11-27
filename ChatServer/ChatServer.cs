@@ -17,7 +17,7 @@ public class ChatServer
     private List<ClientHandler> clients = new();
     private object clientsLock = new();
     public RoomManager RoomManager { get; set; } = new();
-    public Logger Logger { get; set; } = new Logger();
+    public Logger Logger { get; set; } = new();
     
     public ChatServer(IPAddress ip, int port)
     {
@@ -96,13 +96,26 @@ public class ChatServer
     /// </summary>
     public void Stop()
     {
-        running = false;
-        listener.Stop();
-        Dispatcher.Stop();
-        if (thread != null && thread.IsAlive)
+        try
         {
-            thread.Join();
+            running = false;
+            listener.Stop();
+            Dispatcher.Stop();
+            if (thread != null && thread.IsAlive)
+            {
+                thread.Join();
+            }
+
+            Console.WriteLine("Server stopped");
         }
-        Console.WriteLine("Server stopped");
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        finally
+        {
+            Console.Write("Press any key to exit...");
+            Console.ReadLine();
+        }
     }
 }

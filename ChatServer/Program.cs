@@ -5,19 +5,27 @@ using System.Net;
 using System.Net.Sockets;
 
 var portStr = ConfigurationManager.AppSettings["ServerPort"];
-
-int port = 5000;
-if (!string.IsNullOrEmpty(portStr))
-{
-    int.TryParse(portStr, out port);
-}
-
 var ipStr = ConfigurationManager.AppSettings["ServerIP"];
-IPAddress ip = IPAddress.Any;
-if (!string.IsNullOrEmpty(ipStr))
+
+if (string.IsNullOrEmpty(portStr) || !int.TryParse(portStr, out int port))
 {
-    IPAddress.TryParse(ipStr, out ip);
+    Console.WriteLine("Invalid port number!");
+    Console.WriteLine("Fix the config file.");
+    Console.Write("Press any key to exit...");
+    Console.ReadLine();
+    return;
 }
+
+if (string.IsNullOrEmpty(ipStr) || !IPAddress.TryParse(ipStr, out IPAddress ip))
+{
+    Console.WriteLine("Invalid IP address!");
+    Console.WriteLine("Fix the config file.");
+    Console.Write("Press any key to exit...");
+    Console.ReadLine();
+    return;
+}
+
+Console.WriteLine($"Loaded configuration: IP: {ip} Port: {port}");
 
 var server = new ChatServer.ChatServer(ip,port);
 
