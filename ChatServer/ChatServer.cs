@@ -5,6 +5,9 @@ using ChatServer.Rooms;
 
 namespace ChatServer;
 
+/// <summary>
+/// Main chat server class. Handles clients, rooms, and message dispatching.
+/// </summary>
 public class ChatServer
 {
     private TcpListener listener;
@@ -29,6 +32,10 @@ public class ChatServer
         thread = new Thread(AcceptClient);
     }
 
+    /// <summary>
+    /// Adds client to the List of clients
+    /// </summary>
+    /// <param name="clientHandler">Client to be added</param>
     public void AddClient(ClientHandler clientHandler)
     {
         lock (clientsLock)
@@ -37,6 +44,10 @@ public class ChatServer
         }
     }
 
+    /// <summary>
+    /// Remove client from the list
+    /// </summary>
+    /// <param name="clientHandler">Client to be removed</param>
     public void RemoveClient(ClientHandler clientHandler)
     {
         lock (clientsLock)
@@ -46,6 +57,9 @@ public class ChatServer
         }
     }
 
+    /// <summary>
+    /// Creates a ClientHandler for each connected client.
+    /// </summary>
     private void AcceptClient()
     {
         while (running)
@@ -67,6 +81,9 @@ public class ChatServer
         }
     }
 
+    /// <summary>
+    /// Starts the server.
+    /// </summary>
     public void Start()
     {
         listener.Start();
@@ -74,6 +91,9 @@ public class ChatServer
         Console.WriteLine("Server started");
     }
 
+    /// <summary>
+    /// Stops the server and message dispatcher.
+    /// </summary>
     public void Stop()
     {
         running = false;

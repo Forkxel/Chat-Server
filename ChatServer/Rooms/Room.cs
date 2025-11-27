@@ -2,6 +2,9 @@
 
 namespace ChatServer.Rooms;
 
+/// <summary>
+/// Represents a chat room containing multiple clients.
+/// </summary>
 public class Room
 {
     public string Name { get; set; }
@@ -13,6 +16,9 @@ public class Room
         Name = name;
     }
 
+    /// <summary>
+    /// Adds a client to the room.
+    /// </summary>
     public void AddMember(ClientHandler handler)
     {
         lock (membersLock)
@@ -21,6 +27,9 @@ public class Room
         }
     }
 
+    /// <summary>
+    /// Removes a client from the room.
+    /// </summary>
     public void RemoveMember(ClientHandler handler)
     {
         lock (membersLock)

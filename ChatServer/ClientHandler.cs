@@ -5,6 +5,9 @@ using ChatServer.Rooms;
 
 namespace ChatServer;
 
+/// <summary>
+/// Handles an individual client connection on the server.
+/// </summary>
 public class ClientHandler
 {
     private TcpClient client;
@@ -23,6 +26,10 @@ public class ClientHandler
         thread.Start();
     }
 
+    /// <summary>
+    /// Main loop for handling client communication.
+    /// Receives messages, handles commands (-nick, -join), and forwards messages to the dispatcher.
+    /// </summary>
     private void Run()
     {
         try
@@ -77,6 +84,10 @@ public class ClientHandler
         }
     }
 
+    /// <summary>
+    /// Sends a message to the client.
+    /// </summary>
+    /// <param name="message">Message text to send.</param>
     public void SendMessage(string message)
     {
         try

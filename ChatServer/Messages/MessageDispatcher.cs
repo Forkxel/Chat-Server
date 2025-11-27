@@ -2,6 +2,9 @@
 
 namespace ChatServer.Messages;
 
+/// <summary>
+/// Dispatches messages from clients to all other clients in the same room.
+/// </summary>
 public class MessageDispatcher
 {
     private BlockingCollection<Message> queue = new();
@@ -17,11 +20,17 @@ public class MessageDispatcher
         thread.Start();
     }
 
+    /// <summary>
+    /// Enqueues a message to be sent to clients.
+    /// </summary>
     public void Enqueue(Message message)
     {
         queue.Add(message);
     }
 
+    /// <summary>
+    /// Sends the messages to all clients in the Room
+    /// </summary>
     private void Send()
     {
         while (running || queue.Count > 0)
@@ -61,6 +70,9 @@ public class MessageDispatcher
         }
     }
 
+    /// <summary>
+    /// Stops the dispatcher and waits for its thread to finish.
+    /// </summary>
     public void Stop()
     {
         running = false;

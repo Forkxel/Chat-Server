@@ -2,11 +2,17 @@
 
 namespace ChatServer.Rooms;
 
+/// <summary>
+/// Manages chat rooms, creating them as needed.
+/// </summary>
 public class RoomManager
 {
     private Dictionary<string, Room> rooms = new();
     private object roomsLock = new();
 
+    /// <summary>
+    /// Returns an existing room or creates a new one if it doesn't exist.
+    /// </summary>
     public Room GetOrCreateRoom(string roomName)
     {
         lock (roomsLock)
