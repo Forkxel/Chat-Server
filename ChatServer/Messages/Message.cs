@@ -1,6 +1,4 @@
-﻿using ChatServer.Rooms;
-
-namespace ChatServer;
+﻿namespace ChatServer.Messages;
 
 public class Message
 {

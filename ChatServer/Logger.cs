@@ -1,5 +1,8 @@
 ﻿namespace ChatServer;
 
+/// <summary>
+/// Class 
+/// </summary>
 public class Logger
 {
     private string filePath = "chatLog.txt";

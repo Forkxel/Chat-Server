@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using System.Net.Mime;
 
-namespace ChatServer;
+namespace ChatServer.Messages;
 
 public class MessageDispatcher
 {
@@ -9,7 +8,7 @@ public class MessageDispatcher
     private Func<ClientHandler[]> clientsProvider;
     private Thread thread;
     private bool running = true;
-    public Logger Logger { get; } = new Logger();
+    public Logger Logger { get; } = new();
 
     public MessageDispatcher(Func<ClientHandler[]> clientsProvider)
     {
@@ -29,7 +28,16 @@ public class MessageDispatcher
         {
             try
             {
-                var message = queue.Take();
+                Message message;
+                try
+                {
+                    message = queue.Take();
+                }
+                catch (InvalidOperationException e)
+                {
+                    break;
+                }
+                
                 var text = $"[{message.Time:HH:mm:ss}] {message.Sender.Name}: {message.Text}";
                 foreach (var client in clientsProvider().Where(c => c.Room == message.Sender.Room))
                 {
@@ -57,6 +65,6 @@ public class MessageDispatcher
     {
         running = false;
         queue.CompleteAdding();
-        thread.Join(500);
+        thread.Join();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using ChatServer.Messages;
 using ChatServer.Rooms;
 
 namespace ChatServer;
