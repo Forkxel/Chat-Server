@@ -19,9 +19,9 @@ public class ChatServer
     public RoomManager RoomManager { get; set; } = new();
     public Logger Logger { get; set; } = new Logger();
     
-    public ChatServer(int port)
+    public ChatServer(IPAddress ip, int port)
     {
-        listener = new TcpListener(IPAddress.Any, port);
+        listener = new TcpListener(ip, port);
         Dispatcher = new MessageDispatcher(() =>
         {
             lock (clientsLock) 
@@ -99,7 +99,10 @@ public class ChatServer
         running = false;
         listener.Stop();
         Dispatcher.Stop();
-        thread.Join(500);
+        if (thread != null && thread.IsAlive)
+        {
+            thread.Join();
+        }
         Console.WriteLine("Server stopped");
     }
 }

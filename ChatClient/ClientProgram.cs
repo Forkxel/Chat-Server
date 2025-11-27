@@ -15,6 +15,7 @@ public class ClientProgram
     public void Run()
     {
         string ip;
+        int port;
         while (true)
         {
             Console.Write("Server IP: ");
@@ -25,11 +26,22 @@ public class ClientProgram
                 break;
             }
             Console.WriteLine("Invalid IP address. Please try again.");
+            Console.Write("Port: ");
+        }
+
+        while (true)
+        {
+            Console.Write("Server Port: ");
+            if (int.TryParse(Console.ReadLine(), out port))
+            {
+                break;
+            }
+            Console.WriteLine("Invalid port. Please try again.");
         }
 
         try
         {
-            var client = new TcpClient(ip, 5000);
+            var client = new TcpClient(ip, port);
             var stream = client.GetStream();
             var reader = new StreamReader(stream, Encoding.UTF8);
             var writer = new StreamWriter(stream, Encoding.UTF8);
