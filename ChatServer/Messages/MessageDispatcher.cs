@@ -47,7 +47,7 @@ public class MessageDispatcher
                     break;
                 }
                 
-                var text = $"[{message.Time:HH:mm:ss}] {message.Sender.Name}: {message.Text}";
+                var text = $"[{message.Time:HH:mm:ss}] [{message.Sender.Room.Name}] {message.Sender.Name}: {message.Text}";
                 foreach (var client in clientsProvider().Where(c => c.Room == message.Sender.Room))
                 {
                     try

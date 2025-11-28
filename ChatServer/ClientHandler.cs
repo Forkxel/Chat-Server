@@ -45,6 +45,7 @@ public class ClientHandler
             writer.AutoFlush = true;
 
             writer.WriteLine("Welcome to Chat Server!");
+            writer.WriteLine("You are in room general.");
             writer.WriteLine("Use -nick <name> to set nickname.");
             writer.WriteLine("Use -join <name> to switch room.");
             string line;
