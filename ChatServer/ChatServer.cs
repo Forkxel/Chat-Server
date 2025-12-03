@@ -76,6 +76,7 @@ public class ChatServer
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                Logger.Log("Error in accepting client: " + e.Message);
                 throw;
             }
         }
@@ -111,6 +112,7 @@ public class ChatServer
         catch (Exception e)
         {
             Console.WriteLine(e);
+            Logger.Log("Error in stopping server: " + e.Message);
         }
         finally
         {

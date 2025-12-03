@@ -76,6 +76,7 @@ public class ClientHandler
         catch (IOException e)
         {
             Console.WriteLine($"Client {Name} disconnected");
+            server.Logger.Log($"Client {Name} disconnected with error: {e.Message}");
         }
         finally
         {
@@ -109,6 +110,7 @@ public class ClientHandler
         catch (Exception e)
         {
             Console.WriteLine(e);
+            server.Logger.Log($"Error in sending message: {e.Message}");
         }
     }
 }

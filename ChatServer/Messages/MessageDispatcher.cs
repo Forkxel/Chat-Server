@@ -58,6 +58,7 @@ public class MessageDispatcher
                     catch (Exception e)
                     {
                         Console.WriteLine(e);
+                        Logger.Log($"Error in sending message to {client.Name}: {e.Message}");
                         throw;
                     }
                 }
@@ -65,6 +66,7 @@ public class MessageDispatcher
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                Logger.Log($"Error in dispatcher loop: {e.Message}");
                 throw;
             }
         }

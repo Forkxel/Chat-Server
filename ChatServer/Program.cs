@@ -27,9 +27,11 @@ if (string.IsNullOrEmpty(ipStr) || !IPAddress.TryParse(ipStr, out IPAddress ip))
 
 Console.WriteLine($"Loaded configuration: IP: {ip} Port: {port}");
 
+ChatServer.ChatServer server = null;
+
 try
 {
-    var server = new ChatServer.ChatServer(ip, port);
+    server = new ChatServer.ChatServer(ip, port);
     server.Start();
     Console.WriteLine("Type 'exit' to stop the server.");
     while ((Console.ReadLine() ?? "") != "exit")
@@ -40,8 +42,10 @@ try
 catch (SocketException e)
 {
     Console.WriteLine($"Cannot start server on {ip}:{port}. Check if the IP is available and the port is free. Fix App.config if necessary");
+    server.Logger.Log($"Cannot start server on {ip}:{port}. Check if the IP is available and the port is free. Fix App.config if necessary");
 }
 catch (Exception e)
 {
     Console.WriteLine("Server error: " + e.Message);
+    server.Logger.Log($"Server general error: {e.Message}");
 }
