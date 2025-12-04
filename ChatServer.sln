@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatServer", "ChatServer\Ch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatClient", "ChatClient\ChatClient.csproj", "{D18A8A5B-B038-4995-8419-ACAB82170905}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatServerTest", "ChatServerTest\ChatServerTest.csproj", "{107E58FD-B7AD-478F-B0AB-C00F9759C225}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +18,5 @@ Global
 		{D18A8A5B-B038-4995-8419-ACAB82170905}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D18A8A5B-B038-4995-8419-ACAB82170905}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D18A8A5B-B038-4995-8419-ACAB82170905}.Release|Any CPU.Build.0 = Release|Any CPU
-		{107E58FD-B7AD-478F-B0AB-C00F9759C225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{107E58FD-B7AD-478F-B0AB-C00F9759C225}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{107E58FD-B7AD-478F-B0AB-C00F9759C225}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{107E58FD-B7AD-478F-B0AB-C00F9759C225}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
