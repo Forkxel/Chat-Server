@@ -33,8 +33,9 @@ A multithreaded TCP chat server in C# with support for multiple rooms, nicknames
 2. The console will show:
 
 ```
+Loaded configuration: IP: 0.0.0.0 Port: 5000
 Server started
-Type 'exit' to stop.
+Type 'exit' to stop the server.
 ```
 3. Server runs on localhost (network - 127.0.0.0) and listens on port 5000 by default
 
