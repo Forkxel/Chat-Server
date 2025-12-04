@@ -90,7 +90,7 @@ public class ClientHandler
     /// Sends a message to the client.
     /// </summary>
     /// <param name="message">Message text to send.</param>
-    public void SendMessage(string message)
+    public virtual void SendMessage(string message)
     {
         try
         {
