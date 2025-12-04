@@ -1,7 +1,6 @@
-﻿using ChatServer;
-using ChatServer.Rooms;
+﻿using ChatServer.Rooms;
 
-namespace ChatServerTest;
+namespace ChatServerTest.RoomsTests;
 
 public class RoomTest
 {
@@ -26,13 +25,5 @@ public class RoomTest
         room.RemoveMember(mockClient);
         
         Assert.DoesNotContain(mockClient, room.GetMembers());
-    }
-}
-
-public class ClientHandlerMock : ClientHandler
-{
-    public ClientHandlerMock() : base(null, null)
-    {
-        
     }
 }

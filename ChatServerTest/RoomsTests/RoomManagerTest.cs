@@ -1,6 +1,6 @@
 ﻿using ChatServer.Rooms;
 
-namespace ChatServerTest;
+namespace ChatServerTest.RoomsTests;
 
 public class RoomManagerTest
 {
