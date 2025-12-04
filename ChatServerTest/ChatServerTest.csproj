@@ -23,4 +23,9 @@
       <ProjectReference Include="..\ChatServer\ChatServer.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="TestsFromOthers\TestCases\" />
+      <Folder Include="TestsFromOthers\TestReports\" />
+    </ItemGroup>
+
 </Project>

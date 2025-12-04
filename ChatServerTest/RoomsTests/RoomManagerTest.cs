@@ -2,8 +2,14 @@
 
 namespace ChatServerTest.RoomsTests;
 
+/// <summary>
+/// Test class for testing RoomManager
+/// </summary>
 public class RoomManagerTest
 {
+    /// <summary>
+    /// Testing method for creating room
+    /// </summary>
     [Fact]
     public void CreateRoom()
     {
@@ -13,6 +19,9 @@ public class RoomManagerTest
         Assert.Equal("general", room.Name);
     }
 
+    /// <summary>
+    /// Testing method for getting room
+    /// </summary>
     [Fact]
     public void GetRoom()
     {

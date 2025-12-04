@@ -2,8 +2,14 @@
 
 namespace ChatServerTest.MessagesTests;
 
+/// <summary>
+/// Test class testing Message
+/// </summary>
 public class MessageTest
 {
+    /// <summary>
+    /// Method for testing setting properties of Message
+    /// </summary>
     [Fact]
     public void MessagePropertiesTest()
     {

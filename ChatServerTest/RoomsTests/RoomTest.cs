@@ -2,8 +2,14 @@
 
 namespace ChatServerTest.RoomsTests;
 
+/// <summary>
+/// Test class for testing Room
+/// </summary>
 public class RoomTest
 {
+    /// <summary>
+    /// Method testing adding user to the room
+    /// </summary>
     [Fact]
     public void AddMember_Test()
     {
@@ -15,6 +21,9 @@ public class RoomTest
         Assert.Contains(mockClient, room.GetMembers());
     }
 
+    /// <summary>
+    /// Method testing removing of user from room
+    /// </summary>
     [Fact]
     public void RemoveMember_Test()
     {
