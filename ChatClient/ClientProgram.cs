@@ -13,69 +13,91 @@ public class ClientProgram
     /// Starts the client, prompts the user for server IP, and allows sending messages.
     /// </summary>
     public void Run()
-    {
-        string ip;
-        int port;
-        while (true)
         {
-            Console.Write("Server IP: ");
-            ip = Console.ReadLine();
-
-            if (IPAddress.TryParse(ip, out _))
-            {
-                break;
-            }
-            Console.WriteLine("Invalid IP address. Please try again.");
-            Console.Write("Port: ");
-        }
-
-        while (true)
-        {
-            Console.Write("Server Port: ");
-            if (int.TryParse(Console.ReadLine(), out port))
-            {
-                break;
-            }
-            Console.WriteLine("Invalid port. Please try again.");
-        }
-
-        try
-        {
-            var client = new TcpClient(ip, port);
-            var stream = client.GetStream();
-            var reader = new StreamReader(stream, Encoding.UTF8);
-            var writer = new StreamWriter(stream, Encoding.UTF8);
-
-            writer.AutoFlush = true;
-
-            Console.Clear();
-            Console.WriteLine("Connection established.\n");
-
-            new Thread(() => WriteToConsole(reader)).Start();
-
+            IPAddress ip;
+            int port;
+            
             while (true)
             {
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
+                Console.Write("Server IP: ");
+                var inputIp = Console.ReadLine();
+                if (IPAddress.TryParse(inputIp, out ip))
+                    break;
+                Console.WriteLine("Invalid IP address. Try again.");
+            }
+            
+            while (true)
+            {
+                Console.Write("Server Port: ");
+                var inputPort = Console.ReadLine();
+                if (int.TryParse(inputPort, out port))
+                    break;
+                Console.WriteLine("Invalid port. Try again.");
+            }
+
+            TcpClient client = null;
+            
+            while (true)
+            {
+                try
                 {
-                    writer.WriteLine(input);
+                    client = new TcpClient(ip.ToString(), port);
+                    break;
+                }
+                catch (SocketException)
+                {
+                    Console.WriteLine("Could not connect to server. Try again.");
+
+                    while (true)
+                    {
+                        Console.Write("Server IP: ");
+                        var inputIp = Console.ReadLine();
+                        if (IPAddress.TryParse(inputIp, out ip))
+                            break;
+                        Console.WriteLine("Invalid IP address. Try again.");
+                    }
+
+                    while (true)
+                    {
+                        Console.Write("Server Port: ");
+                        var inputPort = Console.ReadLine();
+                        if (int.TryParse(inputPort, out port))
+                            break;
+                        Console.WriteLine("Invalid port. Try again.");
+                    }
                 }
             }
+
+            try
+            {
+                var stream = client.GetStream();
+                var reader = new StreamReader(stream, Encoding.UTF8);
+                var writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
+
+                Console.Clear();
+                Console.WriteLine("Connection established.\n");
+
+                new Thread(() => WriteToConsole(reader)).Start();
+
+                while (true)
+                {
+                    string input = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(input))
+                    {
+                        writer.WriteLine(input);
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                Console.WriteLine("Connection lost.");
+            }
+            finally
+            {
+                Console.Write("\nPress any key to exit...");
+                Console.ReadLine();
+            }
         }
-        catch (SocketException e)
-        {
-            Console.WriteLine("Could not connect to the server.");
-        }
-        catch (IOException e)
-        {
-            Console.WriteLine("Connection lost.");
-        }
-        finally
-        {
-            Console.Write("\nPress any key to exit...");
-            Console.ReadLine();
-        }
-    }
 
     /// <summary>
     /// Reads messages from the server and prints them to the console.

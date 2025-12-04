@@ -4,48 +4,69 @@ using System.Configuration;
 using System.Net;
 using System.Net.Sockets;
 
-var portStr = ConfigurationManager.AppSettings["ServerPort"];
-var ipStr = ConfigurationManager.AppSettings["ServerIP"];
-
-if (string.IsNullOrEmpty(portStr) || !int.TryParse(portStr, out int port))
+int port = 0;
+while (true)
 {
-    Console.WriteLine("Invalid port number!");
-    Console.WriteLine("Fix the config file.");
-    Console.Write("Press any key to exit...");
-    Console.ReadLine();
-    return;
+    var portStr = ConfigurationManager.AppSettings["ServerPort"];
+    if (!string.IsNullOrEmpty(portStr) && int.TryParse(portStr, out port))
+        break;
+
+    Console.WriteLine("Invalid port number in App.config! Fix the config file.");
+    Console.Write("Enter a new port: ");
+    portStr = Console.ReadLine();
+    if (!int.TryParse(portStr, out port))
+    {
+        Console.WriteLine("Port must be a number!");
+        continue;
+    }
 }
 
-if (string.IsNullOrEmpty(ipStr) || !IPAddress.TryParse(ipStr, out IPAddress ip))
+
+IPAddress ip = null;
+while (true)
 {
-    Console.WriteLine("Invalid IP address!");
-    Console.WriteLine("Fix the config file.");
-    Console.Write("Press any key to exit...");
-    Console.ReadLine();
-    return;
+    var ipStr = ConfigurationManager.AppSettings["ServerIP"];
+    if (!string.IsNullOrEmpty(ipStr) && IPAddress.TryParse(ipStr, out ip))
+        break;
+
+    Console.WriteLine("Invalid IP address in App.config! Fix the config file.");
+    Console.Write("Enter a new IP: ");
+    ipStr = Console.ReadLine();
+    if (!IPAddress.TryParse(ipStr, out ip))
+    {
+        Console.WriteLine("IP address format is invalid!");
+    }
 }
+
 
 Console.WriteLine($"Loaded configuration: IP: {ip} Port: {port}");
 
-ChatServer.ChatServer server = null;
-
-try
+while (true)
 {
-    server = new ChatServer.ChatServer(ip, port);
-    server.Start();
-    Console.WriteLine("Type 'exit' to stop the server.");
-    while ((Console.ReadLine() ?? "") != "exit")
+    try
     {
+        var server = new ChatServer.ChatServer(ip, port);
+        server.Start();
+        Console.WriteLine("Type 'exit' to stop the server.");
+        while ((Console.ReadLine() ?? "").ToLower() != "exit") { }
+        server.Stop();
+        break;
     }
-    server.Stop();
-}
-catch (SocketException e)
-{
-    Console.WriteLine($"Cannot start server on {ip}:{port}. Check if the IP is available and the port is free. Fix App.config if necessary");
-    server.Logger.Log($"Cannot start server on {ip}:{port}. Check if the IP is available and the port is free. Fix App.config if necessary");
-}
-catch (Exception e)
-{
-    Console.WriteLine("Server error: " + e.Message);
-    server.Logger.Log($"Server general error: {e.Message}");
+    catch (SocketException)
+    {
+        Console.WriteLine($"Cannot start server on {ip}:{port}. Check if the IP is available and the port is free.");
+        Console.Write("Enter a new IP: ");
+        while (!IPAddress.TryParse(Console.ReadLine(), out ip))
+        {
+            Console.WriteLine("IP invalid. Try again.");
+            Console.Write("Enter a new IP: ");
+        }
+
+        Console.Write("Enter a new Port: ");
+        while (!int.TryParse(Console.ReadLine(), out port))
+        {
+            Console.WriteLine("Port invalid. Try again.");
+            Console.Write("Enter a new Port: ");
+        }
+    }
 }
