@@ -37,4 +37,12 @@ public class Room
             members.Remove(handler);
         }
     }
+
+    public IEnumerable<ClientHandler> GetMembers()
+    {
+        lock (membersLock)
+        {
+            return members.ToList();
+        }
+    }
 }
