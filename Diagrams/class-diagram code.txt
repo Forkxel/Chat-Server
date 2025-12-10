@@ -1,0 +1,68 @@
+I did this diagram at - https://editor.plantuml.com/
+
+
+@startuml
+
+class ChatServer {
+    - TcpListener listener
+    - List<ClientHandler> clients
+    - MessageDispatcher dispatcher
+    - RoomManager roomManager
+    + Start()
+    + Stop()
+}
+
+class ClientHandler {
+    - TcpClient client
+    - StreamReader reader
+    - StreamWriter writer
+    - string nickname
+    - string currentRoom
+    - Thread thread
+    - ChatServer server
+    + Run()
+    + SendMessage(message : string)
+}
+
+class MessageDispatcher {
+    - BlockingCollection<Message> queue
+    - Func<List<ClientHandler>> getClients
+    + Enqueue(message : Message)
+    - DispatchLoop()
+}
+
+class RoomManager {
+    - Dictionary<string, Room> rooms
+    + GetOrCreate(roomName : string) : Room
+    + JoinRoom(client : ClientHandler, roomName : string)
+    + LeaveRoom(client : ClientHandler)
+}
+
+class Room {
+    - string name
+    - List<ClientHandler> clients
+    + AddClient(client : ClientHandler)
+    + RemoveClient(client : ClientHandler)
+}
+
+class Message {
+    + string Text
+    + string Room
+    + ClientHandler Sender
+}
+
+
+ChatServer --> ClientHandler : creates
+ChatServer --> MessageDispatcher : uses
+ChatServer --> RoomManager : uses
+
+RoomManager --> Room : manages
+Room --> ClientHandler : contains
+
+MessageDispatcher --> Message : processes
+MessageDispatcher --> ClientHandler : sends to
+
+ClientHandler --> MessageDispatcher : enqueues
+ClientHandler --> RoomManager : joins/leaves
+
+@enduml
