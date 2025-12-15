@@ -46,18 +46,19 @@ public class ClientHandler
 
             writer.WriteLine("Welcome to Chat Server!");
             writer.WriteLine("You are in room general.");
-            writer.WriteLine("Use -nick <name> to set nickname.");
-            writer.WriteLine("Use -join <name> to switch room.");
-            writer.WriteLine("Use -who to list users in room.");
+            writer.WriteLine("Use /nick <name> to set nickname.");
+            writer.WriteLine("Use /join <name> to switch room.");
+            writer.WriteLine("Use /who to list users in room.");
+            writer.WriteLine("Use /list to list all the rooms.");
             string line;
             while ((line = reader.ReadLine()) != null)
             {
-                if (line.StartsWith("-nick"))
+                if (line.StartsWith("/nick"))
                 {
                     Name = line.Substring(6).Trim();
                     writer.WriteLine("Name set to: " + Name);
                 }
-                else if (line.StartsWith("-join"))
+                else if (line.StartsWith("/join"))
                 {
                     var newRoom = line.Substring(6).Trim();
                     if (!string.IsNullOrEmpty(newRoom))
@@ -68,13 +69,18 @@ public class ClientHandler
                         writer.WriteLine("Joined room: " + newRoom);
                     }
                 }
-                else if (line.StartsWith("-who"))
+                else if (line.StartsWith("/who"))
                 {
                     lock (Room)
                     {
                         var members = Room.GetMembers().Select(c => c.Name).ToList();
                         writer.WriteLine("Users in this room: " + string.Join(", ", members));
                     }
+                }
+                else if (line.StartsWith("/list"))
+                {
+                    var rooms = server.RoomManager.GetRoomNames();
+                    writer.WriteLine("Available rooms: " + string.Join(", ", rooms));
                 }
                 else
                 {

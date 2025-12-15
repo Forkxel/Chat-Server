@@ -24,4 +24,17 @@ public class RoomManager
             return room;
         }
     }
+    
+    /// <summary>
+    /// Method to get names of all the rooms
+    /// </summary>
+    /// <returns>Names of the rooms</returns>
+    public string[] GetRoomNames()
+    {
+        lock (roomsLock)
+        {
+            return rooms.Keys.ToArray();
+        }
+    }
+
 }
