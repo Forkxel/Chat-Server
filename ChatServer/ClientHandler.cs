@@ -48,6 +48,7 @@ public class ClientHandler
             writer.WriteLine("You are in room general.");
             writer.WriteLine("Use -nick <name> to set nickname.");
             writer.WriteLine("Use -join <name> to switch room.");
+            writer.WriteLine("Use -who to list users in room.");
             string line;
             while ((line = reader.ReadLine()) != null)
             {
@@ -65,6 +66,14 @@ public class ClientHandler
                         Room = server.RoomManager.GetOrCreateRoom(newRoom);
                         Room.AddMember(this);
                         writer.WriteLine("Joined room: " + newRoom);
+                    }
+                }
+                else if (line.StartsWith("-who"))
+                {
+                    lock (Room)
+                    {
+                        var members = Room.GetMembers().Select(c => c.Name).ToList();
+                        writer.WriteLine("Users in this room: " + string.Join(", ", members));
                     }
                 }
                 else
