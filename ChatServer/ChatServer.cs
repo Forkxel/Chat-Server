@@ -120,4 +120,19 @@ public class ChatServer
             Console.ReadLine();
         }
     }
+    
+    /// <summary>
+    /// Find client by name
+    /// </summary>
+    /// <param name="name">Nick of the client</param>
+    /// <returns>Client with same nick</returns>
+    public ClientHandler? GetClientByName(string name)
+    {
+        lock (clientsLock)
+        {
+            return clients.FirstOrDefault(c =>
+                c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
 }

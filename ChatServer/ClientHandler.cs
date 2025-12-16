@@ -50,6 +50,7 @@ public class ClientHandler
             writer.WriteLine("Use /join <name> to switch room.");
             writer.WriteLine("Use /who to list users in room.");
             writer.WriteLine("Use /list to list all the rooms.");
+            writer.WriteLine("Use /msg <nick> <message> to send private message.");
             string line;
             while ((line = reader.ReadLine()) != null)
             {
@@ -81,6 +82,33 @@ public class ClientHandler
                 {
                     var rooms = server.RoomManager.GetRoomNames();
                     writer.WriteLine("Available rooms: " + string.Join(", ", rooms));
+                }
+                else if (line.StartsWith("/msg"))
+                {
+                    var parts = line.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
+
+                    if (parts.Length < 3)
+                    {
+                        writer.WriteLine("Usage: /msg <nick> <message>");
+                        continue;
+                    }
+
+                    var targetName = parts[1];
+                    var messageText = parts[2];
+
+                    var targetClient = server.GetClientByName(targetName);
+
+                    if (targetClient == null)
+                    {
+                        writer.WriteLine($"User '{targetName}' not found.");
+                        continue;
+                    }
+
+                    var privateMsg = $"[PM {DateTime.Now:HH:mm:ss}] {Name}: {messageText}";
+
+                    targetClient.SendMessage(privateMsg);
+                    
+                    writer.WriteLine($"[PM to {targetName}] {messageText}");
                 }
                 else
                 {
