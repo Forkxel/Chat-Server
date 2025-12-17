@@ -54,11 +54,26 @@ public class ClientHandler
             string line;
             while ((line = reader.ReadLine()) != null)
             {
-                if (line.StartsWith("/nick"))
+                if (line.StartsWith("-nick"))
                 {
-                    Name = line.Substring(6).Trim();
+                    string newName = line.Substring(6).Trim();
+
+                    if (string.IsNullOrEmpty(newName))
+                    {
+                        writer.WriteLine("Nickname cannot be empty.");
+                        continue;
+                    }
+
+                    if (server.IsNicknameTaken(newName))
+                    {
+                        writer.WriteLine($"Nickname '{newName}' is already taken. Choose another one.");
+                        continue;
+                    }
+
+                    Name = newName;
                     writer.WriteLine("Name set to: " + Name);
                 }
+
                 else if (line.StartsWith("/join"))
                 {
                     var newRoom = line.Substring(6).Trim();

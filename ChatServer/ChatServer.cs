@@ -135,4 +135,17 @@ public class ChatServer
         }
     }
 
+    /// <summary>
+    /// Checks if nickname is taken
+    /// </summary>
+    /// <param name="nickname">Nickname</param>
+    /// <returns>True if nick is taken</returns>
+    public bool IsNicknameTaken(string nickname)
+    {
+        lock (clientsLock)
+        {
+            return clients.Any(c => c.Name.Equals(nickname, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
 }
