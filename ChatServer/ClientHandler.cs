@@ -64,8 +64,10 @@ public class ClientHandler
                     var newRoom = line.Substring(6).Trim();
                     if (!string.IsNullOrEmpty(newRoom))
                     {
+                        server.Dispatcher.Enqueue(new Message($"User {Name} left the room {Room.Name}", Room.Name, this));
                         Room.RemoveMember(this);
                         Room = server.RoomManager.GetOrCreateRoom(newRoom);
+                        server.Dispatcher.Enqueue(new Message($"User {Name} joined the room {Room.Name}", Room.Name, this));
                         Room.AddMember(this);
                         writer.WriteLine("Joined room: " + newRoom);
                     }
