@@ -10,6 +10,9 @@ public class Room
     public string Name { get; set; }
     private List<ClientHandler> members = new();
     private object membersLock = new();
+    private Queue<string> messageHistory = new();
+    private int maxHistory = 50;
+    private object historyLock = new();
 
     public Room(string name)
     {
@@ -25,6 +28,14 @@ public class Room
         {
             members.Add(handler);
         }
+
+        lock (historyLock)
+        {
+            foreach (var msg in messageHistory)
+            {
+                handler.SendMessage(msg);
+            }
+        }
     }
 
     /// <summary>
@@ -38,11 +49,31 @@ public class Room
         }
     }
 
+    /// <summary>
+    /// Returns all members in list
+    /// </summary>
+    /// <returns>List of members</returns>
     public IEnumerable<ClientHandler> GetMembers()
     {
         lock (membersLock)
         {
             return members.ToList();
+        }
+    }
+    
+    /// <summary>
+    /// Saves written messages to List to save
+    /// </summary>
+    /// <param name="message"></param>
+    public void AddMessageToHistory(string message)
+    {
+        lock (historyLock)
+        {
+            messageHistory.Enqueue(message);
+            if (messageHistory.Count > maxHistory)
+            {
+                messageHistory.Dequeue();
+            }
         }
     }
 }

@@ -54,6 +54,7 @@ public class MessageDispatcher
                     {
                         client.SendMessage(text);
                         Logger.Log($"[{message.Sender.Room.Name}] {message.Sender.Name}: {message.Text}");
+                        client.Room.AddMessageToHistory(text);
                     }
                     catch (Exception e)
                     {
