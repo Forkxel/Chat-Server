@@ -55,7 +55,7 @@ public class ClientHandler
             writer.WriteLine("Use /delete <roomName> to delete room");
             writer.WriteLine("Use /clear to delete history of current room.");
             writer.WriteLine();
-            
+
             SendRoomHistory(Room);
             string line;
             while ((line = reader.ReadLine()) != null)

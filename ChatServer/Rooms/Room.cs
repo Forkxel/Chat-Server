@@ -35,6 +35,14 @@ public class Room
     /// </summary>
     public void AddMember(ClientHandler handler)
     {
+        lock (historyLock)
+        {
+            foreach (var msg in messageHistory)
+            {
+                handler.SendMessage(msg);
+            }
+        }
+        
         lock (membersLock)
         {
             members.Add(handler);
@@ -119,6 +127,14 @@ public class Room
                     member.SendMessage($"[System] History for room {Name} has been cleared.");
                 }
             }
+        }
+    }
+    
+    public List<string> GetHistory()
+    {
+        lock (historyLock)
+        {
+            return messageHistory.ToList();
         }
     }
 }
