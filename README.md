@@ -55,16 +55,26 @@ Server Port:
 ```
 Connection established.
 Welcome to Chat Server!
-Use -nick <name> to set nickname.
-Use -join <name> to switch room.
+Use /nick <name> to set nickname.
+Use /join <name> to switch room.
+Use /who to list users in room.
+Use /list to list all the rooms.
+Use /msg <nick> <message> to send private message.
+Use /delete <roomName> to delete room
+Use /clear to delete history of current room.
 ```
 5. You can now start sending messages.
 
 ##### Client commands
 
 <ul>
-    <li>-nick &lt;name> – Set or change your nickname.</li>
-    <li>-join &lt;name> – Join an existing room or create a new room.</li>
+    <li>/nick &lt;name> – Set or change your nickname.</li>
+    <li>/join &lt;name> – Join an existing room or create a new room.</li>
+    <li>/who            – Print all the current users in the room</li>
+    <li>/list – List of all the current existing rooms</li>
+    <li>/msg &lt;nick> &lt;message> – To send private message to single user</li>
+    <li>/delete &lt;roomName> – to delete room of your choice</li>
+    <li>/clear – to clear history of the current room</li>
 </ul>
 
 #### Server logging
@@ -74,6 +84,10 @@ All messages are saved in chatLog.txt with timestamps and room names:
 ```
 [2025-11-27 12:34:56] [general] Anonymous: Hello world
 ```
+
+#### Room history
+
+All of the messages are saved in files and when new user joins the room it will print the history of the chat.
 
 ### Customization
 
