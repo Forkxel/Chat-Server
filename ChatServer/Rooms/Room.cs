@@ -13,10 +13,21 @@ public class Room
     private Queue<string> messageHistory = new();
     private int maxHistory = 50;
     private object historyLock = new();
+    private string historyFile;
 
     public Room(string name)
     {
         Name = name;
+        historyFile = $"{name}_history.txt";
+        
+        if (File.Exists(historyFile))
+        {
+            var lines = File.ReadAllLines(historyFile);
+            foreach (var line in lines.TakeLast(maxHistory))
+            {
+                messageHistory.Enqueue(line);
+            }
+        }
     }
 
     /// <summary>
@@ -27,14 +38,6 @@ public class Room
         lock (membersLock)
         {
             members.Add(handler);
-        }
-
-        lock (historyLock)
-        {
-            foreach (var msg in messageHistory)
-            {
-                handler.SendMessage(msg);
-            }
         }
     }
 
@@ -73,6 +76,48 @@ public class Room
             if (messageHistory.Count > maxHistory)
             {
                 messageHistory.Dequeue();
+            }
+
+            try
+            {
+                File.AppendAllText(historyFile, message + Environment.NewLine);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to write history for room {Name}: {e.Message}");
+                
+                throw;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Clears the history of the room
+    /// </summary>
+    public void ClearHistory()
+    {
+        lock (historyLock)
+        {
+            messageHistory.Clear();
+            try
+            {
+                if (File.Exists(historyFile))
+                {
+                    File.Delete(historyFile);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to clear history for room {Name}");
+                Logger.Log($"Failed to clear history for room {Name}");
+            }
+            
+            lock (membersLock)
+            {
+                foreach (var member in members)
+                {
+                    member.SendMessage($"[System] History for room {Name} has been cleared.");
+                }
             }
         }
     }

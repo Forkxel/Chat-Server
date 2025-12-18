@@ -17,7 +17,6 @@ public class ChatServer
     private List<ClientHandler> clients = new();
     private object clientsLock = new();
     public RoomManager RoomManager { get; set; } = new();
-    public Logger Logger { get; set; } = new();
     
     public ChatServer(IPAddress ip, int port)
     {

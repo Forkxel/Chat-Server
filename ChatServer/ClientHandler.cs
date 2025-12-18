@@ -17,6 +17,7 @@ public class ClientHandler
     private StreamReader reader;
     public string Name { get; set; } = "Anonymous";
     public Room Room { get; set; }
+    private static object historyLocker = new();
 
     public ClientHandler(TcpClient tcpClient, ChatServer server)
     {
@@ -51,10 +52,15 @@ public class ClientHandler
             writer.WriteLine("Use /who to list users in room.");
             writer.WriteLine("Use /list to list all the rooms.");
             writer.WriteLine("Use /msg <nick> <message> to send private message.");
+            writer.WriteLine("Use /delete <roomName> to delete room");
+            writer.WriteLine("Use /clear to delete history of current room.");
+            writer.WriteLine();
+            
+            SendRoomHistory(Room);
             string line;
             while ((line = reader.ReadLine()) != null)
             {
-                if (line.StartsWith("-nick"))
+                if (line.StartsWith("/nick"))
                 {
                     string newName = line.Substring(6).Trim();
 
@@ -79,12 +85,21 @@ public class ClientHandler
                     var newRoom = line.Substring(6).Trim();
                     if (!string.IsNullOrEmpty(newRoom))
                     {
-                        server.Dispatcher.Enqueue(new Message($"User {Name} left the room {Room.Name}", Room.Name, this));
-                        Room.RemoveMember(this);
+                        var oldRoom = Room;
+                        oldRoom.RemoveMember(this);
+                        foreach (var member in oldRoom.GetMembers())
+                        {
+                            member.SendMessage($"User {Name} left the room {oldRoom.Name}");
+                        }
+                        
                         Room = server.RoomManager.GetOrCreateRoom(newRoom);
-                        server.Dispatcher.Enqueue(new Message($"User {Name} joined the room {Room.Name}", Room.Name, this));
                         Room.AddMember(this);
-                        writer.WriteLine("Joined room: " + newRoom);
+                        foreach (var member in Room.GetMembers().Where(m => m != this))
+                        {
+                            member.SendMessage($"User {Name} joined the room {Room.Name}");
+                        }
+                        
+                        writer.WriteLine($"Joined room: {Room.Name}");
                     }
                 }
                 else if (line.StartsWith("/who"))
@@ -127,16 +142,37 @@ public class ClientHandler
                     
                     writer.WriteLine($"[PM to {targetName}] {messageText}");
                 }
+                else if (line.StartsWith("/delete"))
+                {
+                    var roomToRemove = line.Substring(8).Trim();
+                    if (!string.IsNullOrEmpty(roomToRemove))
+                    {
+                        if (server.RoomManager.RemoveRoom(roomToRemove))
+                        {
+                            writer.WriteLine($"Room '{roomToRemove}' removed and history deleted.");
+                        }
+                        else
+                        {
+                            writer.WriteLine($"Room '{roomToRemove}' does not exist.");
+                        }
+                    }
+                }
+                else if (line.StartsWith("/clear"))
+                {
+                    Room.ClearHistory();
+                }
                 else
                 {
-                    server.Dispatcher.Enqueue(new Message(line, Room.Name,this));
+                    var msg = new Message(line, Room.Name, this);
+                    server.Dispatcher.Enqueue(msg);
+                    AppendToRoomHistory(Room, msg);
                 }
             }
         }
         catch (IOException e)
         {
             Console.WriteLine($"Client {Name} disconnected");
-            server.Logger.Log($"Client {Name} disconnected with error: {e.Message}");
+            Logger.Log($"Client {Name} disconnected with error: {e.Message}");
         }
         finally
         {
@@ -150,7 +186,7 @@ public class ClientHandler
     /// Sends a message to the client.
     /// </summary>
     /// <param name="message">Message text to send.</param>
-    public virtual void SendMessage(string message)
+    public void SendMessage(string message)
     {
         try
         {
@@ -170,7 +206,36 @@ public class ClientHandler
         catch (Exception e)
         {
             Console.WriteLine(e);
-            server.Logger.Log($"Error in sending message: {e.Message}");
+            Logger.Log($"Error in sending message: {e.Message}");
         }
+    }
+    
+    private void SendRoomHistory(Room room)
+    {
+        var file = $"{room.Name}_history.txt";
+        if (File.Exists(file))
+        {
+            var lines = File.ReadAllLines(file);
+            foreach (var line in lines)
+            {
+                lock (writer)
+                {
+                    writer.WriteLine(line);
+                }
+            }
+        }
+    }
+
+    private void AppendToRoomHistory(Room room, Message message)
+    {
+        var file = $"{room.Name}_history.txt";
+        var line = $"[{message.Time:HH:mm:ss}] [{room.Name}] {message.Sender.Name}: {message.Text}";
+        
+        lock (historyLocker)
+        {
+            File.AppendAllText(file, line + Environment.NewLine);
+        }
+        
+        Logger.Log(line);
     }
 }

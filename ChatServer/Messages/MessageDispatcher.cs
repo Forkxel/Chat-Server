@@ -11,7 +11,6 @@ public class MessageDispatcher
     private Func<ClientHandler[]> clientsProvider;
     private Thread thread;
     private bool running = true;
-    public Logger Logger { get; } = new();
 
     public MessageDispatcher(Func<ClientHandler[]> clientsProvider)
     {

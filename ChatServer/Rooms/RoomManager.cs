@@ -37,4 +37,27 @@ public class RoomManager
         }
     }
 
+    /// <summary>
+    /// Method to delete room
+    /// </summary>
+    /// <param name="roomName"></param>
+    /// <returns>True if the room is deleted</returns>
+    public bool RemoveRoom(string roomName)
+    {
+        lock (roomsLock)
+        {
+            if (rooms.TryGetValue(roomName, out var room))
+            {
+                rooms.Remove(roomName);
+
+                var historyFile = $"{roomName}_history.txt";
+                if (File.Exists(historyFile))
+                {
+                    File.Delete(historyFile);
+                }
+                return true; 
+            }
+            return false;
+        }
+    }
 }
