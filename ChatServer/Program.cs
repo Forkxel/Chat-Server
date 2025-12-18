@@ -38,8 +38,19 @@ while (true)
     }
 }
 
+IPAddress displayIp;
 
-Console.WriteLine($"Loaded configuration: IP: {ip} Port: {port}");
+if (ip.Equals(IPAddress.Any))
+{
+    displayIp = IPAddress.Loopback;
+}
+else
+{
+    displayIp = ip;
+}
+
+Console.WriteLine($"Loaded configuration: IP: {displayIp} Port: {port}");
+
 
 while (true)
 {

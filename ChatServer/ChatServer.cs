@@ -146,5 +146,4 @@ public class ChatServer
             return clients.Any(c => c.Name.Equals(nickname, StringComparison.OrdinalIgnoreCase));
         }
     }
-
 }

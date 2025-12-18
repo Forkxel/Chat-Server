@@ -127,6 +127,12 @@ public class ClientHandler
 
                     var targetName = parts[1];
                     var messageText = parts[2];
+                    
+                    if (targetName.Equals("Anonymous", StringComparison.OrdinalIgnoreCase))
+                    {
+                        writer.WriteLine("You cannot send private messages to Anonymous.");
+                        return;
+                    }
 
                     var targetClient = server.GetClientByName(targetName);
 
